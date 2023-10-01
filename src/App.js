@@ -2,17 +2,14 @@ import React, { useEffect, useState } from 'react';
 import './App.css';
 import { Dev3SDK, FunctionsOracleRegistry } from 'dev3-sdk';
 
-
 const sdk = new Dev3SDK(
   "cULb/.NGU7SYhiDF5VlQA0bKK07bV83RMNEj+XcD5KGVu",
   "3141e2b5-7849-47c9-8e0e-7222348f1935"
 );
 
-
 function App () {
   const [functionsRegistry, setFunctionsRegistry] = useState(null);
   const [functionsRegistryConfig, setFunctionsRegistryConfig] = useState(null);
-  const [functionsRegistryTotalBalance, setFunctionsRegistryTotalBalance] = useState(null);
   const [subscription, setSubscription] = useState(null);
   const [inputId, setInputId] = useState('');
   const [inputAmount, setInputAmount] = useState('');
@@ -29,17 +26,13 @@ function App () {
     const functionsRegistry = new FunctionsOracleRegistry();
     await functionsRegistry.init();
     setFunctionsRegistry(functionsRegistry);
-    setFunctionsRegistryTotalBalance(await functionsRegistry.getTotalBalance());
   }
 
-
-  // Function to handle the button click and fetch data
   const createSubscription = async () => {
     setFunctionsRegistry(functionsRegistry);
     const subscription = await functionsRegistry.createSubscription();
     setSubscription(subscription);
   };
-
 
   const getSubscription = async () => {
     const subscription = await functionsRegistry.getSubscription(inputId);
@@ -54,14 +47,11 @@ function App () {
   const handleFund = async () => {
     const action = await subscription.fund(inputAmount);
     await action.present();
+    getSubscription();
   };
 
   const handleCancel = () => {
     subscription.cancel(inputAddress);
-  };
-
-  const handleOwnerCancel = () => {
-    subscription.ownerCancel();
   };
 
   const handleAddConsumer = async () => {
@@ -70,20 +60,28 @@ function App () {
     getSubscription();
   };
 
-  const handleRemoveConsumer = () => {
-    subscription.removeConsumer(inputAddConsumer);
+  const handleRemoveConsumer = async () => {
+    const action = await subscription.removeConsumer(inputRemoveConsumer);
+    await action.present();
+    getSubscription();
   };
 
-  const handleAcceptSubscriptionOwnerTransfer = () => {
-    subscription.acceptSubscriptionOwnerTransfer();
+  const handleAcceptSubscriptionOwnerTransfer = async () => {
+    const action = await subscription.acceptSubscriptionOwnerTransfer();
+    await action.present();
+    getSubscription();
   };
 
-  const handleRequestSubscriptionOwnerTransfer = () => {
-    subscription.requestSubscriptionOwnerTransfer(inputOwner);
+  const handleRequestSubscriptionOwnerTransfer = async () => {
+    const action = await subscription.requestSubscriptionOwnerTransfer(inputOwner);
+    await action.present();
   };
 
   return (
     <div className="App">
+      <div className='network'>
+        <h2>This app is running on the Sepolia test network</h2>
+      </div>
       <h1>Functions Oracle Registry Info</h1>
       <div>
         { functionsRegistryConfig && 
@@ -96,9 +94,6 @@ function App () {
                 <th>Gas After Payment Calculation</th>
                 <th>Fallback Wei Per Unit Link</th>
                 <th>Gas Overhead</th>
-                <th>Chainlink Address</th>
-                <th>Chainlink Price Feed</th>
-                <th>Total Balance</th>
               </tr>
             </thead>
             <tbody>
@@ -109,9 +104,6 @@ function App () {
                   <td>{functionsRegistryConfig.gasAfterPaymentCalculation}</td>
                   <td>{functionsRegistryConfig.fallbackWeiPerUnitLink}</td>
                   <td>{functionsRegistryConfig.gasOverhead}</td>
-                  <td>{functionsRegistryConfig.chainlinkAddress}</td>
-                  <td>{functionsRegistryConfig.chainlinkPriceFeed}</td>
-                  <td>{functionsRegistryTotalBalance}</td>
                 </tr>
             </tbody>
           </table>
@@ -201,9 +193,6 @@ function App () {
             </div>
             <div>
               <button onClick={handleAcceptSubscriptionOwnerTransfer}>Accept Subscription Owner Transfer</button>
-            </div>
-            <div>
-              <button onClick={handleOwnerCancel}>Owner Cancel</button>
             </div>
         </div>
       </>
