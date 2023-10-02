@@ -5,13 +5,13 @@ The app runs on the Ethereum Sepolia test network.
 
 ## Live demo
 
-App live demo is accessible [here](https://chainlink-functions-example-react-app.vercel.app/).
+App live demo is accessible [here](https://chainlink-functions-example-react-app-sigma.vercel.app/).
 
 ## Installation
 Clone the github repository and install the required npm packages:
 
 ```bash
-git clone https://github.com/codingSince9/chainlink-functions-example-react-app
+git clone https://github.com/0xDev3/chainlink-functions-example-react-app.git
 npm install
 ```
 
